@@ -319,6 +319,7 @@ record.prototype.translate = function(item) {
 	} else {
 		item.itemType = "book";
 	}
+    
 
 	// Starting from there, we try to distinguish between unimarc and other marc flavours.
 	// In unimarc, the title is in the 200 field and this field isn't used in marc-21 (at least)
@@ -331,8 +332,24 @@ record.prototype.translate = function(item) {
 		if (this.getFieldSubfields("328")[0])
 		{
 			item.itemType = "thesis";
+
 		}
-		
+		//<tghvi>
+        if(this.getFieldSubfields("200")[0]['b']){
+        var c=this.getFieldSubfields("200")[0]['b'];
+        if(c=="[مقاله]")
+        item.itemType="journalArticle";
+        }
+        else if(this.getFieldSubfields("930")[0])
+		{
+          var d=this.getFieldSubfields("930")[0]['a'];   
+                 
+          if(d=="AF"){                                      
+			       item.itemType = "journalArticle";
+                   this._associateDBField(item, "020", "ab", "callNumber"); 
+		       }
+        }
+        //</tghvi>
 		// Extract ISBNs
 		this._associateDBField(item, "010", "a", "ISBN", pullISBN);
 		// Extract ISSNs
